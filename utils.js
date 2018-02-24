@@ -1,7 +1,10 @@
-function calculateData(req,res) {
-  var responses = [];
-  var completed_requests = 0;
+const http = require("http");
 
+function calculateData(req,res) {
+  const responses = [];
+  let completed_requests = 0;
+
+  let urls = ["http://dashboard.savemysales.co/devtest/1", "http://dashboard.savemysales.co/devtest/2"];
   for (i in urls) {
     http.get(urls[i], function(resp) {
       let result = '';
@@ -17,15 +20,12 @@ function calculateData(req,res) {
         completed_requests++;
 
         if (completed_requests == urls.length) {
-          // All download done, process responses array
-          console.log(responses);
-          // for (k in one) ss.push(one[k])
-
+          // Process responses array now.
           const reducer = (acc, cur) => acc + cur;
-          console.log(responses.reduce(reducer));
+
           const sum = responses.reduce(reducer);
           const factors = primeFactorList(sum);
-          res.status(200).json({success: true, value: sum, factors: factors});
+          res.status(200).json({success: true, value: sum, numbers: responses, factors: factors});
         }
       });
     });
@@ -38,9 +38,9 @@ function calculateData(req,res) {
 */
 function primeFactorList(n) {
 	if (n < 1) throw "Argument error";
-	var result = [];
+	let result = [];
 	while (n != 1) {
-		var factor = smallestFactor(n);
+		let factor = smallestFactor(n);
 		result.push(factor);
 		n /= factor;
 	}
@@ -55,12 +55,12 @@ function smallestFactor(n) {
 		throw "Argument error";
 	if (n % 2 == 0)
 		return 2;
-	var end = Math.floor(Math.sqrt(n));
-	for (var i = 3; i <= end; i += 2) {
+	let end = Math.floor(Math.sqrt(n));
+	for (let i = 3; i <= end; i += 2) {
 		if (n % i == 0)
       return i;
 	}
 	return n;
 }
 
-module.exports = calculateData;
+module.exports.calculateData = calculateData;
